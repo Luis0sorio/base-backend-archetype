@@ -1,4 +1,4 @@
-package es.osorio.base.core.domain;
+package es.osorio.base.core.domain.base;
 
 import jakarta.persistence.*;
 import lombok.Getter;

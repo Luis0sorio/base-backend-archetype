@@ -1,6 +1,7 @@
 package es.osorio.base.core.repository.base;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
@@ -11,6 +12,6 @@ import java.io.Serializable;
  * @NoRepositoryBean Spring Data JPA no intenta instanciar directamente este repositorio como un bean.
  */
 @NoRepositoryBean
-public interface BaseRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
+public interface BaseRepository<T, ID extends Serializable> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
   // Aquí se pueden definir métodos comunes a todos los repositorios, si se necesitan.
 }
