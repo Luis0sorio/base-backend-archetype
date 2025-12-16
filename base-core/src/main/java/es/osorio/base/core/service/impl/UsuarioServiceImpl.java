@@ -44,11 +44,19 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario, Long> implement
     this.passwordEncoder = passwordEncoder;
   }
 
+  // Busca un usuario por su nombre de usuario
   @Override
   public Optional<Usuario> findByUsername(String username) {
     return usuarioRepository.findByUsername(username);
   }
 
+  /**
+   * Crea un nuevo usuario
+   * @param usuario entidad Usuario a crear
+   * @return Usuario persistido en la base de datos
+   * @throws BusinessException si el username ya existe
+   * @throws ResourceNotFoundException si el rol ROL_USER no está definido en la base
+   */
   @Override
   public Usuario createUser(Usuario usuario) {
 
@@ -66,6 +74,15 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario, Long> implement
     return usuarioRepository.save(usuario);
   }
 
+  /**
+   * Busca usuarios aplicando filtros dinámicos y paginación.
+   * - Construye un Specification<Usuario> a partir de UsuarioFilterDto.
+   * - Aplica paginación y ordenación según los parámetros del DTO.
+   * - Devuelve un Page<Usuario> con los resultados.
+   *
+   * @param filter DTO con filtros opcionales (username, email, activo) y parámetros de paginación
+   * @return página de usuarios filtrados
+   */
   @Override
   public Page<Usuario> search(UsuarioFilterDto filter) {
     Specification<Usuario> specification = UsuarioSpecification.build(filter);
