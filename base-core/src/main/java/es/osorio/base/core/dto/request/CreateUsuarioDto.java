@@ -1,4 +1,4 @@
-package es.osorio.base.rest.dto.request;
+package es.osorio.base.core.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

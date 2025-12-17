@@ -1,18 +1,25 @@
 package es.osorio.base.core.specification;
 
 
+import es.osorio.base.core.TestApplication;
+import es.osorio.base.core.config.JpaAuditConfig;
+import es.osorio.base.core.config.JpaTestConfig;
 import es.osorio.base.core.domain.Usuario;
 import es.osorio.base.core.dto.UsuarioFilterDto;
 import es.osorio.base.core.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-@DataJpaTest
+
+@SpringBootTest(classes = TestApplication.class)
 public class UsuarioSpecificationTest {
 
   @Autowired
@@ -29,9 +36,7 @@ public class UsuarioSpecificationTest {
     UsuarioFilterDto filter = new UsuarioFilterDto();
     filter.setUsername("adm");
 
-    Specification<Usuario> spec = UsuarioSpecification.build(filter);
-
-    List<Usuario> result = usuarioRepository.findAll(spec);
+    List<Usuario> result = usuarioRepository.findAll(UsuarioSpecification.build(filter));
 
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getUsername()).isEqualTo("admin");

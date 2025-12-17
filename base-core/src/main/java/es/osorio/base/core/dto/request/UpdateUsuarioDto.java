@@ -1,4 +1,4 @@
-package es.osorio.base.rest.dto.request;
+package es.osorio.base.core.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -9,8 +9,10 @@ import jakarta.validation.constraints.NotBlank;
  * - El campo "activo" es opcional (puede ser null), lo que permite actualizar solo el email o también el estado de activación del usuario.
  */
 public record UpdateUsuarioDto(
+
+  String username,
   @NotBlank
   String email,
-
+  String password,
   Boolean activo
 ) {}

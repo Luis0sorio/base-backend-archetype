@@ -1,5 +1,6 @@
 package es.osorio.base.core.dto;
 
+import es.osorio.base.core.dto.base.BaseFilterDto;
 import lombok.Getter;
 import lombok.Setter;
 

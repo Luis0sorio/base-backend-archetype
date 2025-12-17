@@ -2,7 +2,10 @@ package es.osorio.base.core.service;
 
 import es.osorio.base.core.domain.Usuario;
 import es.osorio.base.core.dto.UsuarioFilterDto;
+import es.osorio.base.core.dto.request.CreateUsuarioDto;
+import es.osorio.base.core.dto.request.UpdateUsuarioDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -14,7 +17,10 @@ import java.util.Optional;
  */
 public interface UsuarioService  extends BaseService<Usuario, Long> {
 
+  Optional<Usuario> findById(Long id);
   Optional<Usuario> findByUsername(String username); // Busca un usuario por su nombre de usuario.
-  Usuario createUser(Usuario usuario); // Crea un nuevo usuario.
-  Page<Usuario> search(UsuarioFilterDto filter);
+  Usuario create(CreateUsuarioDto dto); // Crea un nuevo usuario.
+  Usuario update(Long id, UpdateUsuarioDto dto);
+  Page<Usuario> search(UsuarioFilterDto filter, Pageable pageable);
+  void delete(Long id);
 }

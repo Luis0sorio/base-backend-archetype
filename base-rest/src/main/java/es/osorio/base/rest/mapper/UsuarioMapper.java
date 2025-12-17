@@ -1,12 +1,16 @@
 package es.osorio.base.rest.mapper;
 
+import es.osorio.base.core.domain.Rol;
 import es.osorio.base.core.domain.Usuario;
-import es.osorio.base.rest.dto.request.CreateUsuarioDto;
-import es.osorio.base.rest.dto.request.UpdateUsuarioDto;
-import es.osorio.base.rest.dto.response.UsuarioResponseDto;
+import es.osorio.base.core.dto.request.CreateUsuarioDto;
+import es.osorio.base.core.dto.request.UpdateUsuarioDto;
+import es.osorio.base.core.dto.response.UsuarioResponseDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * - Define las conversiones entre la entidad Usuario y los distintos DTOs.
@@ -26,11 +30,6 @@ public interface UsuarioMapper {
   List<UsuarioResponseDto> toResponseDtoList(List<Usuario> entities);
 
   /**
-   * Convierte un DTO de respuesta a entidad Usuario.
-   */
-  Usuario toEntity(UsuarioResponseDto dto);
-
-  /**
    * Convierte un DTO de creación a entidad Usuario.
    */
   Usuario toEntity(CreateUsuarioDto dto);
@@ -38,5 +37,11 @@ public interface UsuarioMapper {
   /**
    * Convierte un DTO de actualización a entidad Usuario.
    */
-  Usuario toEntity(UpdateUsuarioDto dto);
+  void updateEntityFromDto(UpdateUsuarioDto dto, @MappingTarget Usuario entity);
+
+  default Set<String> mapRoles(Set<Rol> roles) {
+    return roles.stream()
+      .map(r -> r.getTipo().name())
+      .collect(Collectors.toSet());
+  }
 }

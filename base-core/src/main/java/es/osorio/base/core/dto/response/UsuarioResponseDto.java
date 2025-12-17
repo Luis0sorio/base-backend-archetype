@@ -1,4 +1,4 @@
-package es.osorio.base.rest.dto.response;
+package es.osorio.base.core.dto.response;
 
 import java.util.Set;
 
@@ -10,5 +10,6 @@ public record UsuarioResponseDto (
   Long id,
   String username,
   String email,
+  boolean activo,
   Set<String> roles
 ){}

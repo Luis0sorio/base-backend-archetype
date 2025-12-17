@@ -4,6 +4,8 @@ import es.osorio.base.core.domain.Rol;
 import es.osorio.base.core.domain.RolTipo;
 import es.osorio.base.core.domain.Usuario;
 import es.osorio.base.core.dto.UsuarioFilterDto;
+import es.osorio.base.core.dto.request.CreateUsuarioDto;
+import es.osorio.base.core.dto.request.UpdateUsuarioDto;
 import es.osorio.base.core.exception.BusinessException;
 import es.osorio.base.core.exception.ResourceNotFoundException;
 import es.osorio.base.core.repository.RolRepository;
@@ -12,9 +14,7 @@ import es.osorio.base.core.service.UsuarioService;
 
 import es.osorio.base.core.specification.UsuarioSpecification;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +44,21 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario, Long> implement
     this.passwordEncoder = passwordEncoder;
   }
 
-  // Busca un usuario por su nombre de usuario
+  /**
+   * Busca un usuario por su ID.
+   * @param id identificador del usuario
+   * @return Optional con el usuario si existe
+   */
+  @Override
+  public Optional<Usuario> findById(Long id) {
+    return usuarioRepository.findById(id);
+  }
+
+  /**
+   * Busca un usuario por su nombre de usuario.
+   * @param username nombre de usuario
+   * @return Optional con el usuario si existe
+   */
   @Override
   public Optional<Usuario> findByUsername(String username) {
     return usuarioRepository.findByUsername(username);
@@ -52,24 +66,58 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario, Long> implement
 
   /**
    * Crea un nuevo usuario
-   * @param usuario entidad Usuario a crear
+   * @param dto DTO de creación de usuario
    * @return Usuario persistido en la base de datos
    * @throws BusinessException si el username ya existe
-   * @throws ResourceNotFoundException si el rol ROL_USER no está definido en la base
+   * @throws ResourceNotFoundException si el rol ROL_USER no está definido en la base de datos
    */
   @Override
-  public Usuario createUser(Usuario usuario) {
+  public Usuario create(CreateUsuarioDto dto) {
 
-    if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+    if (usuarioRepository.existsByUsername(dto.username())) {
       throw new BusinessException("El nombre de usuario ya existe.");
     }
 
     Rol userRole = rolRepository.findByTipo(RolTipo.ROL_USER)
       .orElseThrow(() -> new ResourceNotFoundException("Rol", RolTipo.ROL_USER));
 
+    Usuario usuario = new Usuario(
+      dto.username(),
+      dto.email(),
+      dto.password()
+    );
+
     usuario.getRoles().add(userRole);
     usuario.activar();
-    usuario.asignarPasswordHash(passwordEncoder.encode(usuario.getPassword()));
+    usuario.asignarPasswordHash(passwordEncoder.encode(dto.password()));
+
+    return usuarioRepository.save(usuario);
+  }
+
+  /**
+   * Actualiza un usuario existente.
+   * @param id identificador del usuario
+   * @param dto DTO con los campos a actualizar
+   * @return Usuario actualizado
+   * @throws ResourceNotFoundException si el usuario no existe
+   */
+  @Override
+  public Usuario update(Long id, UpdateUsuarioDto dto) {
+
+    Usuario usuario = usuarioRepository.findById(id)
+      .orElseThrow(() -> new ResourceNotFoundException("Usuario", id));
+
+    if (dto.username() != null) {
+      usuario.cambiarUsername(dto.username());
+    }
+
+    if (dto.email() != null) {
+      usuario.cambiarEmail(dto.email());
+    }
+
+    if (dto.password() != null && !dto.password().isBlank()) {
+      usuario.asignarPasswordHash(passwordEncoder.encode(dto.password()));
+    }
 
     return usuarioRepository.save(usuario);
   }
@@ -79,19 +127,25 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario, Long> implement
    * - Construye un Specification<Usuario> a partir de UsuarioFilterDto.
    * - Aplica paginación y ordenación según los parámetros del DTO.
    * - Devuelve un Page<Usuario> con los resultados.
-   *
    * @param filter DTO con filtros opcionales (username, email, activo) y parámetros de paginación
    * @return página de usuarios filtrados
    */
   @Override
-  public Page<Usuario> search(UsuarioFilterDto filter) {
+  public Page<Usuario> search(UsuarioFilterDto filter, Pageable pageable) {
     Specification<Usuario> specification = UsuarioSpecification.build(filter);
-
-    Pageable pageable = PageRequest.of(
-      filter.getPage(),
-      filter.getSize(),
-      Sort.by(filter.getSortDirection(), filter.getSortBy())
-    );
     return usuarioRepository.findAll(specification, pageable);
   }
+
+  /**
+   * Elimina un usuario por su ID.
+   * @param id identificador del usuario
+   * @throws ResourceNotFoundException si el usuario no existe
+   */
+  @Override
+  public void delete(Long id) {
+    Usuario usuario = usuarioRepository.findById(id)
+      .orElseThrow(() -> new ResourceNotFoundException("Usuario", id));
+    usuarioRepository.delete(usuario);
+  }
+
 }

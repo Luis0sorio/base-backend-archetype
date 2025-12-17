@@ -1,4 +1,4 @@
-package es.osorio.base.core.dto;
+package es.osorio.base.core.dto.base;
 
 import lombok.Getter;
 import org.springframework.data.domain.Sort;
