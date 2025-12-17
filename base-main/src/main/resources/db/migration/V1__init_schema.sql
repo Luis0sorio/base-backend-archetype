@@ -1,0 +1,20 @@
+CREATE TABLE rol (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  tipo VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE usuario (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  enabled BOOLEAN NOT NULL
+);
+
+CREATE TABLE usuarios_roles (
+  usuario_id BIGINT NOT NULL,
+  rol_id BIGINT NOT NULL,
+  PRIMARY KEY (usuario_id, rol_id),
+  CONSTRAINT fk_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(id),
+  CONSTRAINT fk_rol FOREIGN KEY (rol_id) REFERENCES rol(id)
+);

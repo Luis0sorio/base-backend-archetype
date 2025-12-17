@@ -1,0 +1,47 @@
+<archetype-descriptor
+        xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
+        name="backend-archetype">
+
+    <requiredProperties>
+        <requiredProperty key="projectName"/>
+        <requiredProperty key="groupId"/>
+        <requiredProperty key="artifactVersion"/>
+        <requiredProperty key="dbName"/>
+    </requiredProperties>
+
+    <modules>
+        <module id="${projectName}-core"/>
+        <module id="${projectName}-rest"/>
+        <module id="${projectName}-main"/>
+    </modules>
+
+    <fileSets>
+        <!-- Código fuente principal -->
+        <fileSet>
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.java</include>
+            </includes>
+            <filtered>true</filtered>
+        </fileSet>
+
+        <!-- Recursos -->
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <filtered>true</filtered>
+        </fileSet>
+
+        <!-- Tests -->
+        <fileSet>
+            <directory>src/test/java</directory>
+            <includes>
+                <include>**/*.java</include>
+            </includes>
+            <filtered>true</filtered>
+        </fileSet>
+    </fileSets>
+
+</archetype-descriptor>
