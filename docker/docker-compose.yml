@@ -3,7 +3,7 @@ version: "3.9"
 services:
 
   mysql:
-    image: mysql:8.0
+    image: mysql:8.4
     container_name: base-mysql
     restart: unless-stopped
     environment:
@@ -13,20 +13,29 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+   # command: --default-authentication-plugin=mysql_native_password
 
-  backend:
-    build: ..
+  app:
+    build:
+      context: ../base-main
     container_name: base-backend
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: base_backend
+      DB_USER: root
+      DB_PASS: root
     ports:
       - "8082:8082"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/base_backend?useSSL=false&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-    restart: unless-stopped
-
 volumes:
   mysql_data:

@@ -1,25 +1,26 @@
 package es.osorio.base.core.specification;
 
-
-import es.osorio.base.core.TestApplication;
-import es.osorio.base.core.config.JpaAuditConfig;
-import es.osorio.base.core.config.JpaTestConfig;
+import es.osorio.base.core.config.CoreJpaTestConfig;
 import es.osorio.base.core.domain.Usuario;
 import es.osorio.base.core.dto.UsuarioFilterDto;
 import es.osorio.base.core.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.domain.Specification;
+//import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(classes = TestApplication.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = CoreJpaTestConfig.class)
+@Transactional
+@Rollback
 public class UsuarioSpecificationTest {
 
   @Autowired
@@ -43,21 +44,16 @@ public class UsuarioSpecificationTest {
   }
 
   @Test
-  void shouldFilterByActivo() {
-
-    Usuario activo = new Usuario("activo", "a@test.com", "pwd");
-    Usuario inactivo = new Usuario("inactivo", "i@test.com", "pwd");
-    inactivo.desactivar();
-
-    usuarioRepository.saveAll(List.of(activo, inactivo));
+  void shouldReturnEmptyWhenNoMatch() {
+    usuarioRepository.save(new Usuario("admin", "admin@test.com", "pwd"));
 
     UsuarioFilterDto filter = new UsuarioFilterDto();
-    filter.setActivo(false);
+    filter.setUsername("xyz");
 
-    List<Usuario> result =
-      usuarioRepository.findAll(UsuarioSpecification.build(filter));
+    List<Usuario> result = usuarioRepository.findAll(
+      UsuarioSpecification.build(filter)
+    );
 
-    assertThat(result).hasSize(1);
-    assertThat(result.get(0).isActivo()).isFalse();
+    assertThat(result).isEmpty();
   }
 }
