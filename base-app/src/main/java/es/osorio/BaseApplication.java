@@ -1,13 +1,20 @@
-package es.osorio.base;
+package es.osorio;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@ComponentScan(basePackages = "es.osorio.base")
 public class BaseApplication {
-
   public static void main(String[] args) {
+    Dotenv dotenv = Dotenv.configure()
+      .ignoreIfMissing()
+      .load();
+
+    dotenv.entries().forEach(entry ->
+      System.setProperty(entry.getKey(), entry.getValue())
+    );
+
     SpringApplication.run(BaseApplication.class, args);
   }
 }

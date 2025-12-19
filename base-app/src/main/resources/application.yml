@@ -1,6 +1,10 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: base-backend
+    profiles:
+      active: dev
 
   jpa:
     open-in-view: false
