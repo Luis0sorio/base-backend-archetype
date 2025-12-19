@@ -37,7 +37,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario, Long> implement
 
   // Inyección por constructor
   public UsuarioServiceImpl(UsuarioRepository usuarioRepository, RolRepository rolRepository,
-                            BCryptPasswordEncoder passwordEncoder) {
+                            PasswordEncoder passwordEncoder) {
     super(usuarioRepository);  // Se pasa el repositorio al servicio base.
     this.usuarioRepository = usuarioRepository;
     this.rolRepository = rolRepository;
